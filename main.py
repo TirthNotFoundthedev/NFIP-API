@@ -7,14 +7,16 @@ import secrets
 import string
 import base64
 import traceback
+import html
 from typing import List, Optional
 from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from .db import DBClient
-from .telegram import TelegramClient
-from .auth import (
+# Absolute imports for root structure
+from db import DBClient
+from telegram import TelegramClient
+from auth import (
     verify_password, create_access_token, get_current_user, COOKIE_NAME,
     get_registration_options, verify_registration_response,
     set_challenge_cookie, get_challenge_from_cookie, options_to_json,
@@ -23,6 +25,7 @@ from .auth import (
 )
 
 app = FastAPI(title="NFIP API")
+# Path updated to look into api/templates from the root
 templates = Jinja2Templates(directory="api/templates")
 
 db = DBClient()
@@ -32,6 +35,10 @@ tg = TelegramClient()
 EXPECTED_ORIGIN = os.getenv("APP_URL", "http://localhost:8000")
 
 # --- HELPERS ---
+def escape_message(text: str) -> str:
+    """Escapes HTML special characters to prevent Telegram API errors."""
+    return html.escape(text, quote=False)
+
 def generate_token(length=7):
     alphabet = string.ascii_letters + string.digits
     return ''.join(secrets.choice(alphabet) for i in range(length))
@@ -289,4 +296,3 @@ async def remove_client(client_id: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-ort=8000)
