@@ -6,3 +6,4 @@ python-telegram-bot
 python-multipart
 jinja2
 PyJWT
+webauthn
