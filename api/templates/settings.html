@@ -11,13 +11,43 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; }
         .censor { cursor: pointer; transition: all 0.2s; user-select: none; }
-        .ts-control { background-color: #374151 !important; color: white !important; border: 1px solid #4b5563 !important; padding: 10px 12px !important; border-radius: 8px !important; }
-        .ts-dropdown { background-color: #374151 !important; border: 1px solid #4b5563 !important; }
-        .ts-dropdown .option { color: white !important; padding: 8px 12px !important; }
-        .ts-dropdown .active { background-color: #2563eb !important; color: white !important; }
-        .ts-dropdown .option:hover { background-color: #4b5563 !important; color: white !important; }
+        
+        /* TomSelect Theme Overrides */
+        .ts-wrapper.single .ts-control { 
+            background-color: #374151 !important; 
+            color: white !important; 
+            border: 1px solid #4b5563 !important; 
+            padding: 12px !important; 
+            border-radius: 8px !important; 
+            cursor: pointer !important;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .ts-dropdown { 
+            background-color: #374151 !important; 
+            border: 1px solid #4b5563 !important; 
+            z-index: 9999 !important; 
+            color: white !important;
+        }
+        .ts-dropdown .option { 
+            color: white !important; 
+            padding: 10px 12px !important; 
+            cursor: pointer !important; 
+        }
+        .ts-dropdown .active { 
+            background-color: #2563eb !important; 
+            color: white !important; 
+        }
+        .ts-dropdown .option:hover { 
+            background-color: #4b5563 !important; 
+            color: white !important; 
+        }
+        /* Ensure dropdown items stay white when selected/active */
         .ts-dropdown .dropdown-content .option.active, 
-        .ts-dropdown .dropdown-content .option:hover { background-color: #4b5563 !important; color: #ffffff !important; }
+        .ts-dropdown .dropdown-content .option:hover { 
+            background-color: #4b5563 !important; 
+            color: #ffffff !important; 
+        }
+        .config-column { position: relative; z-index: 50; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen p-8">
@@ -32,7 +62,7 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
             <!-- Left Column: Configuration Forms -->
-            <div class="xl:col-span-4 space-y-8">
+            <div class="xl:col-span-4 space-y-8 config-column">
                 <!-- Create Topic -->
                 <section class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
                     <h2 class="text-xl font-bold mb-6 text-green-400 flex items-center">
@@ -163,8 +193,9 @@
                                     <td class="p-5">
                                         <span class="censor font-mono bg-black/40 px-3 py-1.5 rounded-md text-blue-300 text-sm" data-real="{{ c.auth_token }}" onclick="copyAndReveal(this)">••••••••</span>
                                     </td>
-                                    <td class="p-5 text-right">
-                                        <a href="/settings/client/delete/{{ c.id }}" onclick="return confirm('Revoke?')" class="text-red-500 hover:text-red-400 text-xs">Revoke</a>
+                                    <td class="p-5 text-right flex justify-end gap-3">
+                                        <a href="/settings/client/test/{{ c.id }}" class="bg-blue-900/20 hover:bg-blue-600 text-blue-400 hover:text-white px-2 py-1 rounded transition-all text-xs border border-blue-900/50">Test</a>
+                                        <a href="/settings/client/delete/{{ c.id }}" onclick="return confirm('Revoke?')" class="bg-red-900/20 hover:bg-red-600 text-red-500 hover:text-white px-2 py-1 rounded transition-all text-xs border border-red-900/50">Revoke</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -177,7 +208,16 @@
     </div>
 
     <script>
-        new TomSelect("#tg-select", { create: false, sortField: { field: "text", direction: "asc" } });
+        function initTomSelect() {
+            const el = document.querySelector("#tg-select");
+            if (el) {
+                new TomSelect(el, { 
+                    create: false, 
+                    sortField: { field: "text", direction: "asc" },
+                    maxOptions: 100
+                });
+            }
+        }
 
         function generateToken() {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -227,9 +267,10 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        window.addEventListener('DOMContentLoaded', obscureAll);
+        window.addEventListener('DOMContentLoaded', () => {
+            initTomSelect();
+            obscureAll();
+        });
     </script>
 </body>
-</html>
-body>
 </html>
